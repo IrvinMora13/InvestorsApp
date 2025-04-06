@@ -1,25 +1,36 @@
 import express from "express";
 import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+
 
 const router = express.Router();
 
-// Registrar un usuario
 router.post("/register", async (req, res) => {
   try {
-    const { nombre, email, contraseña, inversion } = req.body;
+    const { name, email, password } = req.body;
 
-    // Verificar si el email ya existe
-    const usuarioExistente = await User.findOne({ email });
-    if (usuarioExistente)
-      return res.status(400).json({ error: "El email ya está registrado" });
+    // Validamos si ya existe el usuario
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "El usuario ya existe" });
+    }
 
-    // Crear nuevo usuario
-    const nuevoUsuario = new User({ nombre, email, contraseña, inversion });
-    await nuevoUsuario.save();
+    const salt = await bcrypt.genSalt(10); 
+    const encryptedPassword = await bcrypt.hash(encryptedPassword, salt);
 
-    res.status(201).json({ mensaje: "Usuario registrado correctamente" });
+    const newUsers = new User({
+      name,
+      email,
+      password: encryptedPassword
+    });
+
+    await newUsers.save();
+
+    res.status(201).json({ message: "Usuario registrado exitosamente" });
+
   } catch (error) {
-    res.status(500).json({ error: "Error al registrar usuario" });
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 });
 
