@@ -4,6 +4,9 @@ import Progress from "../models/Progress.js";
 import User from "../models/User.js";
 import verifyToken from "../middleware/authMiddleware.js"; 
 
+
+const router = express.Router();
+
 router.post("/create", verifyToken, async (req, res) => {
     try {
       const { title, location, totalInvestment, startDate, estimatedEndDate } = req.body;
@@ -71,4 +74,4 @@ router.post("/create", verifyToken, async (req, res) => {
   });
   
 
-const router = express.Router();
+export default router;

@@ -1,10 +1,33 @@
 import { ArrowBack, Google } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import HouseLogin from "../assets/House.jpg"
+import axios from "../api/axios";
+import HouseLogin from "../assets/House.jpg";
+
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ email, password });
+    try {
+        const res = await axios.post("/login", { email, password });
+        console.log("Login exitoso:", res.data);
+        localStorage.setItem("token", res.data.token);
+        
+        navigate("/dashboard");
+        
+      } catch (err: any) {
+        console.error("Error en login:", err.response?.data?.message || err.message);
+      }
+  }
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
@@ -25,14 +48,18 @@ const Login = () => {
           Start investing in smart construction projects. Join the future of infrastructure!
         </p>
         <h3 className="text-2xl font-semibold mb-2">Login</h3>
-        <form className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             className="border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             className="border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
